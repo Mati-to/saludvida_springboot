@@ -4,6 +4,7 @@ import com.matiasac.saludvida_backend.model.enums.SexoPaciente;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 public class Paciente {
@@ -31,6 +32,9 @@ public class Paciente {
     @Column(length = 11)
     private String telefono;
 
+    @OneToMany(mappedBy = "paciente", fetch = FetchType.LAZY)
+    private List<CitaMedica> citasMedicas;
+
 
     public Paciente() {
     }
@@ -41,6 +45,10 @@ public class Paciente {
         this.rut = rut;
         this.fechaNacimiento = fechaNacimiento;
         this.sexo = sexo;
+    }
+
+    public String getNombreCompleto() {
+        return this.nombre + " " + this.apellido;
     }
 
     public Long getId() {

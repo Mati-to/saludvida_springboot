@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 @Entity
 public class Medico {
 
@@ -33,6 +35,9 @@ public class Medico {
     )
     private Especialidad especialidad;
 
+    @OneToMany(mappedBy = "medico", cascade = CascadeType.ALL)
+    private List<CitaMedica> citasMedicas;
+
 
     protected Medico() {
     }
@@ -47,6 +52,9 @@ public class Medico {
         this.especialidad = especialidad;
     }
 
+    public String getNombreCompleto() {
+        return this.nombre + " " + this.apellido;
+    }
 
     public Long getId() {
         return id;

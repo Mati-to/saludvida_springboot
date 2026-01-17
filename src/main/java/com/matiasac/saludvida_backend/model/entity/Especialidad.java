@@ -3,7 +3,6 @@ package com.matiasac.saludvida_backend.model.entity;
 import jakarta.persistence.*;
 
 @Entity
-@Table
 public class Especialidad {
 
     @Id
