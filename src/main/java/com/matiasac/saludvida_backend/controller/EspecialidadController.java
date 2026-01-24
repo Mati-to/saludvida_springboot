@@ -1,6 +1,7 @@
 package com.matiasac.saludvida_backend.controller;
 
 import com.matiasac.saludvida_backend.model.dto.EspecialidadDTO;
+import com.matiasac.saludvida_backend.model.dto.response.EspecialidadResponseDTO;
 import com.matiasac.saludvida_backend.service.implementation.EspecialidadServiceImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,8 +22,8 @@ public class EspecialidadController {
 
 
     @GetMapping
-    public ResponseEntity<List<EspecialidadDTO>> list() {
-        List<EspecialidadDTO> especialidades = service.findAll();
+    public ResponseEntity<List<EspecialidadResponseDTO>> list() {
+        List<EspecialidadResponseDTO> especialidades = service.findAll();
 
         if (especialidades.isEmpty()) {
             return ResponseEntity.noContent().build();
@@ -33,10 +34,10 @@ public class EspecialidadController {
     }
 
     @PostMapping
-    public ResponseEntity<EspecialidadDTO> create(
+    public ResponseEntity<EspecialidadResponseDTO> create(
             @RequestBody EspecialidadDTO especialidadDto
     ) {
-        EspecialidadDTO response = service.create(especialidadDto);
+        EspecialidadResponseDTO response = service.create(especialidadDto);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -44,11 +45,11 @@ public class EspecialidadController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<EspecialidadDTO> update(
+    public ResponseEntity<EspecialidadResponseDTO> update(
             @RequestBody EspecialidadDTO especialidadDto,
             @PathVariable Long id
     ) {
-        EspecialidadDTO response = service.update(especialidadDto, id);
+        EspecialidadResponseDTO response = service.update(especialidadDto, id);
         return ResponseEntity.ok().body(response);
     }
 

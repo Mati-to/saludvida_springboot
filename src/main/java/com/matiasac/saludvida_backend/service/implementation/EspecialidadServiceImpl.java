@@ -2,6 +2,7 @@ package com.matiasac.saludvida_backend.service.implementation;
 
 import com.matiasac.saludvida_backend.exception.NotFoundException;
 import com.matiasac.saludvida_backend.model.dto.EspecialidadDTO;
+import com.matiasac.saludvida_backend.model.dto.response.EspecialidadResponseDTO;
 import com.matiasac.saludvida_backend.model.entity.Especialidad;
 import com.matiasac.saludvida_backend.model.mapper.EspecialidadMapper;
 import com.matiasac.saludvida_backend.repository.IEspecialidadRepository;
@@ -23,7 +24,7 @@ public class EspecialidadServiceImpl implements IEspecialidadService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<EspecialidadDTO> findAll() {
+    public List<EspecialidadResponseDTO> findAll() {
         List<Especialidad> especialidades = repository.findAll();
 
         return especialidades.stream()
@@ -32,13 +33,13 @@ public class EspecialidadServiceImpl implements IEspecialidadService {
     }
 
     @Override
-    public EspecialidadDTO findById(Long id) {
+    public EspecialidadResponseDTO findById(Long id) {
         return null;
     }
 
     @Override
     @Transactional
-    public EspecialidadDTO create(EspecialidadDTO dtoEspecialidad) {
+    public EspecialidadResponseDTO create(EspecialidadDTO dtoEspecialidad) {
         Especialidad especialidad = mapper.toEspecialidad(dtoEspecialidad);
         repository.save(especialidad);
         return mapper.toDto(especialidad);
@@ -46,7 +47,7 @@ public class EspecialidadServiceImpl implements IEspecialidadService {
 
     @Override
     @Transactional
-    public EspecialidadDTO update(EspecialidadDTO entidadDto, Long id) {
+    public EspecialidadResponseDTO update(EspecialidadDTO entidadDto, Long id) {
         Especialidad especialidad = repository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Especialidad", id));
         mapper.toUpdateEspecialidad(especialidad, entidadDto);
@@ -59,5 +60,10 @@ public class EspecialidadServiceImpl implements IEspecialidadService {
         Especialidad especialidad = repository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Especialidad", id));
         repository.deleteById(especialidad.getId());
+
+        /*TODO: OJO, no se puede eliminar una especialidad cuando tiene médicos asociados
+        para esto el server está respondiendo con un código 500 (es un error de DB).
+        Mejor tomar este error y mandar uno personalizado.*/
+
     }
 }

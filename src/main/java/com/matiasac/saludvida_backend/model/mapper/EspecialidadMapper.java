@@ -1,6 +1,7 @@
 package com.matiasac.saludvida_backend.model.mapper;
 
 import com.matiasac.saludvida_backend.model.dto.EspecialidadDTO;
+import com.matiasac.saludvida_backend.model.dto.response.EspecialidadResponseDTO;
 import com.matiasac.saludvida_backend.model.entity.Especialidad;
 import org.springframework.stereotype.Component;
 
@@ -11,8 +12,11 @@ public class EspecialidadMapper {
         return new Especialidad(dto.nombre());
     }
 
-    public EspecialidadDTO toDto(Especialidad especialidad) {
-        return new EspecialidadDTO(especialidad.getNombre());
+    public EspecialidadResponseDTO toDto(Especialidad especialidad) {
+        return new EspecialidadResponseDTO(
+                especialidad.getId(),
+                especialidad.getNombre()
+        );
     }
 
     public void toUpdateEspecialidad(Especialidad especialidad, EspecialidadDTO dto) {

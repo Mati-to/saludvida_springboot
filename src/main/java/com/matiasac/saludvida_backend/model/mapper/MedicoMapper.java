@@ -32,7 +32,7 @@ public class MedicoMapper {
                 medico.getCorreo(),
                 medico.getRut(),
                 medico.getTelefono(),
-                especialidadMapper.toDto(medico.getEspecialidad())
+                medico.getEspecialidad().getNombre()
         );
     }
 
