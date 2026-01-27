@@ -2,19 +2,19 @@ package com.matiasac.saludvida_backend.service;
 
 
 import com.matiasac.saludvida_backend.model.dto.EspecialidadDTO;
-import org.springframework.transaction.annotation.Transactional;
+import com.matiasac.saludvida_backend.model.dto.response.EspecialidadResponseDTO;
 
 import java.util.List;
 
 public interface IEspecialidadService {
 
-    List<EspecialidadDTO> findAll();
+    List<EspecialidadResponseDTO> findAll();
 
-    EspecialidadDTO findById(Long id);
+    EspecialidadResponseDTO findById(Long id);
 
-    EspecialidadDTO create(EspecialidadDTO dto);
+    EspecialidadResponseDTO create(EspecialidadDTO dto);
 
-    EspecialidadDTO update(EspecialidadDTO dto, Long id);
+    EspecialidadResponseDTO update(EspecialidadDTO dto, Long id);
 
     void deleteById(Long id);
 

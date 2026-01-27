@@ -8,5 +8,5 @@ public record MedicoResponseDTO(
         String correo,
         String rut,
         String telefono,
-        EspecialidadDTO especialidadDto
+        String nombreEspecialidad
 ) { }
