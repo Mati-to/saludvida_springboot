@@ -9,12 +9,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class MedicoMapper {
-    private final EspecialidadMapper especialidadMapper;
-
-    public MedicoMapper(EspecialidadMapper especialidadMapper) {
-        this.especialidadMapper = especialidadMapper;
-    }
-
+    
     public Medico toMedico(MedicoCreateDTO dto, Especialidad especialidad) {
         return new Medico(
                 dto.nombre(),
@@ -27,6 +22,7 @@ public class MedicoMapper {
 
     public MedicoResponseDTO toDto(Medico medico) {
         return new MedicoResponseDTO(
+                medico.getId(),
                 medico.getNombre(),
                 medico.getApellido(),
                 medico.getCorreo(),
