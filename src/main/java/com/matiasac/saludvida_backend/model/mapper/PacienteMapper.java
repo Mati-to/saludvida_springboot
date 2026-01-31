@@ -29,6 +29,7 @@ public class PacienteMapper {
                 paciente.getRut(),
                 paciente.getSexo(),
                 paciente.getTelefono(),
+                paciente.getFechaNacimiento(),
                 calcularEdad(paciente.getFechaNacimiento())
         );
     }
