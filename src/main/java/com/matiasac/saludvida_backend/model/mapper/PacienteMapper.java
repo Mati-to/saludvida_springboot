@@ -23,11 +23,13 @@ public class PacienteMapper {
 
     public PacienteResponseDTO toDto(Paciente paciente) {
         return new PacienteResponseDTO(
+                paciente.getId(),
                 paciente.getNombre(),
                 paciente.getApellido(),
                 paciente.getRut(),
                 paciente.getSexo(),
                 paciente.getTelefono(),
+                paciente.getFechaNacimiento(),
                 calcularEdad(paciente.getFechaNacimiento())
         );
     }
