@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 public record CitaMedicaListDTO(
+        Long id,
         String nombrePaciente,
         String nombreMedico,
         String especialidad,

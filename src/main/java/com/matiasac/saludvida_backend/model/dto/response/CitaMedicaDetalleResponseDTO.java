@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 public record CitaMedicaDetalleResponseDTO(
+        Long id,
         PacienteResponseDTO pacienteDto,
         MedicoResponseDTO medicoDto,
         LocalDate fechaCita,

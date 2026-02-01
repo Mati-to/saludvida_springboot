@@ -36,6 +36,7 @@ public class CitaMedicaMapper {
 
     public CitaMedicaListDTO toDtoList(CitaMedica citaMedica) {
         return new CitaMedicaListDTO(
+                citaMedica.getId(),
                 citaMedica.getPaciente().getNombreCompleto(),
                 citaMedica.getMedico().getNombreCompleto(),
                 citaMedica.getMedico().getEspecialidad().getNombre(),
@@ -46,6 +47,7 @@ public class CitaMedicaMapper {
 
     public CitaMedicaDetalleResponseDTO toDtoDetalle(CitaMedica citaMedica) {
         return new CitaMedicaDetalleResponseDTO(
+                citaMedica.getId(),
                 pacienteMapper.toDto(citaMedica.getPaciente()),
                 medicoMapper.toDto(citaMedica.getMedico()),
                 citaMedica.getFechaCita(),
