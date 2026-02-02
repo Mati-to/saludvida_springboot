@@ -37,11 +37,14 @@ public class CitaMedicaMapper {
     public CitaMedicaListDTO toDtoList(CitaMedica citaMedica) {
         return new CitaMedicaListDTO(
                 citaMedica.getId(),
+                citaMedica.getPaciente().getId(),
+                citaMedica.getMedico().getId(),
                 citaMedica.getPaciente().getNombreCompleto(),
                 citaMedica.getMedico().getNombreCompleto(),
                 citaMedica.getMedico().getEspecialidad().getNombre(),
                 citaMedica.getFechaCita(),
-                citaMedica.getHoraCita()
+                citaMedica.getHoraCita(),
+                citaMedica.getObservaciones()
         );
     }
 
