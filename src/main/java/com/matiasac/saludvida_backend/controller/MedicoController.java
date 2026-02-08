@@ -5,15 +5,17 @@ import com.matiasac.saludvida_backend.model.dto.request.MedicoUpdateDTO;
 import com.matiasac.saludvida_backend.model.dto.response.MedicoResponseDTO;
 import com.matiasac.saludvida_backend.service.implementation.MedicoServiceImpl;
 import jakarta.validation.Valid;
-import org.apache.catalina.connector.Response;
+import jakarta.validation.constraints.Min;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/medico")
+@Validated
 public class MedicoController {
     private final MedicoServiceImpl service;
 
@@ -45,14 +47,22 @@ public class MedicoController {
     @PutMapping("/{id}")
     public ResponseEntity<MedicoResponseDTO> update(
             @Valid @RequestBody MedicoUpdateDTO medicoUpdateDto,
-            @PathVariable Long id
+            @PathVariable @Min(
+                    value = 1,
+                    message = "El ID debe ser mayor a 0."
+            ) Long id
     ) {
         MedicoResponseDTO response = service.update(medicoUpdateDto, id);
         return ResponseEntity.ok().body(response);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(
+            @PathVariable @Min(
+                    value = 1,
+                    message = "El ID debe ser mayor a 0."
+            ) Long id
+    ) {
         service.deleteById(id);
         return ResponseEntity.ok().build();
     }

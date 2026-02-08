@@ -1,11 +1,11 @@
 package com.matiasac.saludvida_backend.exception;
 
-import java.util.List;
+import java.util.Map;
 
 public record ValidacionErrorResponse(
         int status,
         String error,
-        List<String> mensajes,
+        Map<String, String> mensajes,
         String path
 ) {
 }
