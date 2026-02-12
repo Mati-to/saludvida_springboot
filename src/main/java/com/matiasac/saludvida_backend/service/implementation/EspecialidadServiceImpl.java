@@ -40,6 +40,10 @@ public class EspecialidadServiceImpl implements IEspecialidadService {
     @Override
     @Transactional
     public EspecialidadResponseDTO create(EspecialidadDTO dtoEspecialidad) {
+        if (repository.existsByNombre(dtoEspecialidad.nombre())) {
+            throw new RuntimeException("Ya existe una especialidad con este nombre");
+        }
+
         Especialidad especialidad = mapper.toEspecialidad(dtoEspecialidad);
         repository.save(especialidad);
         return mapper.toDto(especialidad);

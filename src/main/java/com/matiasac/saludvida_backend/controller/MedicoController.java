@@ -1,6 +1,5 @@
 package com.matiasac.saludvida_backend.controller;
 
-import com.matiasac.saludvida_backend.config.validation.ValidationGroups;
 import com.matiasac.saludvida_backend.model.dto.request.MedicoCreateDTO;
 import com.matiasac.saludvida_backend.model.dto.request.MedicoUpdateDTO;
 import com.matiasac.saludvida_backend.model.dto.response.MedicoResponseDTO;
@@ -37,7 +36,7 @@ public class MedicoController {
 
     @PostMapping
     public ResponseEntity<MedicoResponseDTO> create(
-            @Validated(ValidationGroups.Orden.class) @RequestBody MedicoCreateDTO medicoDto
+           @Valid @RequestBody MedicoCreateDTO medicoDto
     ) {
        MedicoResponseDTO response = service.create(medicoDto);
        return ResponseEntity
