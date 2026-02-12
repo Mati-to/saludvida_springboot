@@ -17,11 +17,11 @@ import java.util.stream.Collectors;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleEntidadNotFound(
+    public ResponseEntity<ApiErrorResponse> handleEntidadNotFound(
         NotFoundException exception,
         HttpServletRequest request
     ) {
-        ErrorResponse error = new ErrorResponse(
+        ApiErrorResponse error = new ApiErrorResponse(
                 HttpStatus.NOT_FOUND.value(),
                 exception.getMessage(),
                 request.getRequestURI()
@@ -30,7 +30,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ValidacionErrorResponse> handleValidacionError(
+    public ResponseEntity<ApiErrorResponse> handleValidacionError(
             MethodArgumentNotValidException exception,
             HttpServletRequest request
     ) {
@@ -42,17 +42,17 @@ public class GlobalExceptionHandler {
                         Collectors.mapping(FieldError::getDefaultMessage, Collectors.toList())
                 ));
 
-        ValidacionErrorResponse response = new ValidacionErrorResponse(
+        ApiErrorResponse response = new ApiErrorResponse(
                 HttpStatus.BAD_REQUEST.value(),
                 "Error de validación de los campos",
-                errors,
-                request.getRequestURI()
+                request.getRequestURI(),
+                errors
         );
         return ResponseEntity.badRequest().body(response);
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<ErrorResponse> handleConstraintViolation(
+    public ResponseEntity<ApiErrorResponse> handleConstraintViolation(
             ConstraintViolationException exception,
             HttpServletRequest request
     ) {
@@ -60,7 +60,7 @@ public class GlobalExceptionHandler {
                 .map(ConstraintViolation::getMessage)
                 .collect(Collectors.joining(", "));
 
-        ErrorResponse response = new ErrorResponse(
+        ApiErrorResponse response = new ApiErrorResponse(
                 HttpStatus.BAD_REQUEST.value(),
                 mensaje,
                 request.getRequestURI()
@@ -69,14 +69,26 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(RecursoDuplicadoException.class)
-    public ResponseEntity<ValidacionErrorResponse> handleRecursoDuplicado(
+    public ResponseEntity<ApiErrorResponse> handleRecursoDuplicado(
             RecursoDuplicadoException exception,
             HttpServletRequest request
     ) {
-        ValidacionErrorResponse response = new ValidacionErrorResponse(
+        ApiErrorResponse response = new ApiErrorResponse(
                 HttpStatus.CONFLICT.value(),
                 exception.getMessage(),
-                Map.of("error", List.of("Conflicto de integridad con datos existentes")),
+                request.getRequestURI()
+        );
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
+    }
+
+    @ExceptionHandler(RecursoEnUsoException.class)
+    public ResponseEntity<ApiErrorResponse> handleRecursoEnUso(
+            RecursoEnUsoException exception,
+            HttpServletRequest request
+    ) {
+        ApiErrorResponse response = new ApiErrorResponse(
+                HttpStatus.CONFLICT.value(),
+                exception.getMessage(),
                 request.getRequestURI()
         );
         return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
