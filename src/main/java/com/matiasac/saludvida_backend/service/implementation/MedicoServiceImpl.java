@@ -1,6 +1,7 @@
 package com.matiasac.saludvida_backend.service.implementation;
 
 import com.matiasac.saludvida_backend.exception.NotFoundException;
+import com.matiasac.saludvida_backend.exception.RecursoDuplicadoException;
 import com.matiasac.saludvida_backend.model.dto.request.MedicoCreateDTO;
 import com.matiasac.saludvida_backend.model.dto.request.MedicoUpdateDTO;
 import com.matiasac.saludvida_backend.model.dto.response.MedicoResponseDTO;
@@ -51,6 +52,14 @@ public class MedicoServiceImpl implements IMedicoService {
         Especialidad especialidad = especialidadRepository
                 .findById(dtoMedico.especialidadId())
                 .orElseThrow(() -> new NotFoundException("Especialidad", dtoMedico.especialidadId()));
+
+        if (repository.existsByCorreo(dtoMedico.correo())) {
+            throw new RecursoDuplicadoException("Ya existe un médico registrado con este correo");
+        }
+
+        if (repository.existsByRut(dtoMedico.rut())) {
+            throw new RecursoDuplicadoException("Ya existe un médico registrado con este RUT");
+        }
 
         Medico medico = mapper.toMedico(dtoMedico, especialidad);
         repository.save(medico);
