@@ -5,6 +5,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface IMedicoRepository extends JpaRepository<Medico, Long> {
 
+    boolean existsByCorreo(String correo);
+    boolean existsByRut(String rut);
     boolean existsByEspecialidadId(Long id);
 
 }
