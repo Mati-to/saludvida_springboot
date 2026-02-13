@@ -59,7 +59,7 @@ public class EspecialidadServiceImpl implements IEspecialidadService {
     public EspecialidadResponseDTO update(EspecialidadDTO entidadDto, Long id) {
         Especialidad especialidad = repository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Especialidad", id));
-        if (repository.existsByNombre(entidadDto.nombre()) && !especialidad.getId().equals(id)) {
+        if (repository.existsByNombreAndIdNot(entidadDto.nombre(), id)) {
             throw new RecursoDuplicadoException("Ya existe una especialidad con este nombre");
         }
         mapper.toUpdateEspecialidad(especialidad, entidadDto);

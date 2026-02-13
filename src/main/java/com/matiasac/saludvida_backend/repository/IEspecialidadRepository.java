@@ -8,5 +8,6 @@ public interface IEspecialidadRepository extends JpaRepository<Especialidad, Lon
 
     EspecialidadDTO findByNombre(String nombre);
     boolean existsByNombre(String nombre);
+    boolean existsByNombreAndIdNot(String nombre, Long id);
 
 }

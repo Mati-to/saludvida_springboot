@@ -1,6 +1,7 @@
 package com.matiasac.saludvida_backend.service.implementation;
 
 import com.matiasac.saludvida_backend.exception.NotFoundException;
+import com.matiasac.saludvida_backend.exception.RecursoDuplicadoException;
 import com.matiasac.saludvida_backend.model.dto.request.PacienteRequestDTO;
 import com.matiasac.saludvida_backend.model.dto.response.PacienteResponseDTO;
 import com.matiasac.saludvida_backend.model.entity.Paciente;
@@ -41,6 +42,11 @@ public class PacienteServiceImpl implements IPacienteService {
     @Override
     @Transactional
     public PacienteResponseDTO create(PacienteRequestDTO dto) {
+
+        if (repository.existsByRut(dto.rut())) {
+            throw new RecursoDuplicadoException("Ya existe un paciente registrado con ese rut");
+        }
+
         Paciente paciente = mapper.toPaciente(dto);
         repository.save(paciente);
         return mapper.toDto(paciente);
@@ -51,6 +57,11 @@ public class PacienteServiceImpl implements IPacienteService {
     public PacienteResponseDTO update(PacienteRequestDTO dtoUpdate, Long id) {
         Paciente paciente = repository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Paciente", id));
+
+        if (repository.existsByRutAndIdNot(dtoUpdate.rut(), id)) {
+            throw new RecursoDuplicadoException("Ya existe un paciente con este rut");
+        }
+
         mapper.toUpdatePaciente(paciente, dtoUpdate);
         return mapper.toDto(paciente);
     }
@@ -60,6 +71,6 @@ public class PacienteServiceImpl implements IPacienteService {
     public void deleteById(Long id) {
         Paciente paciente = repository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Paciente", id));
-        repository.deleteById(id);
+        repository.deleteById(paciente.getId());
     }
 }

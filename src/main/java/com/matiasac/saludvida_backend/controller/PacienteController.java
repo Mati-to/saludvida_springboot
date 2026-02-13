@@ -3,14 +3,18 @@ package com.matiasac.saludvida_backend.controller;
 import com.matiasac.saludvida_backend.model.dto.request.PacienteRequestDTO;
 import com.matiasac.saludvida_backend.model.dto.response.PacienteResponseDTO;
 import com.matiasac.saludvida_backend.service.implementation.PacienteServiceImpl;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/paciente")
+@Validated
 public class PacienteController {
     private final PacienteServiceImpl service;
 
@@ -30,7 +34,7 @@ public class PacienteController {
 
     @PostMapping
     public ResponseEntity<PacienteResponseDTO> create(
-            @RequestBody PacienteRequestDTO pacienteDto
+            @Valid @RequestBody PacienteRequestDTO pacienteDto
     ) {
         PacienteResponseDTO response = service.create(pacienteDto);
         return ResponseEntity
@@ -40,15 +44,17 @@ public class PacienteController {
 
     @PutMapping("/{id}")
     public ResponseEntity<PacienteResponseDTO> update(
-            @RequestBody PacienteRequestDTO pacienteUpdateDto,
-            @PathVariable Long id
+            @Valid @RequestBody PacienteRequestDTO pacienteUpdateDto,
+            @PathVariable @Min(value = 1, message = "El ID debe ser mayor a 0") Long id
     ) {
         PacienteResponseDTO response = service.update(pacienteUpdateDto, id);
         return ResponseEntity.ok().body(response);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(
+            @PathVariable @Min(value = 1, message = "El ID debe ser mayor a 0") Long id
+    ) {
         service.deleteById(id);
         return ResponseEntity.ok().build();
     }
