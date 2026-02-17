@@ -59,7 +59,7 @@ public class PacienteServiceImpl implements IPacienteService {
                 .orElseThrow(() -> new NotFoundException("Paciente", id));
 
         if (repository.existsByRutAndIdNot(dtoUpdate.rut(), id)) {
-            throw new RecursoDuplicadoException("Ya existe un paciente con este rut");
+            throw new RecursoDuplicadoException("Ya existe un paciente registrado con ese rut");
         }
 
         mapper.toUpdatePaciente(paciente, dtoUpdate);
