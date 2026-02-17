@@ -1,6 +1,7 @@
 package com.matiasac.saludvida_backend.service.implementation;
 
 import com.matiasac.saludvida_backend.exception.NotFoundException;
+import com.matiasac.saludvida_backend.exception.ValidacionNegocioException;
 import com.matiasac.saludvida_backend.model.dto.request.CitaMedicaRequestDTO;
 import com.matiasac.saludvida_backend.model.dto.response.CitaMedicaDetalleResponseDTO;
 import com.matiasac.saludvida_backend.model.dto.response.CitaMedicaListDTO;
@@ -15,6 +16,7 @@ import com.matiasac.saludvida_backend.service.ICitaMedicaService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalTime;
 import java.util.List;
 
 @Service
@@ -58,10 +60,10 @@ public class CitaMedicaServiceImpl implements ICitaMedicaService {
         Paciente paciente = pacienteRepository.findById(dto.pacienteId())
                 .orElseThrow(() -> new NotFoundException("Paciente", dto.pacienteId()));
 
+        validarHorarioCita(dto.horaCita());
+
         CitaMedica citaMedica = mapper.toCitaMedica(
-                dto,
-                medico,
-                paciente
+                dto, medico, paciente
         );
         repository.save(citaMedica);
         return mapper.toDtoDetalle(citaMedica);
@@ -82,5 +84,15 @@ public class CitaMedicaServiceImpl implements ICitaMedicaService {
         CitaMedica citaMedica = repository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Cita médica", id));
         repository.deleteById(citaMedica.getId());
+    }
+
+    // Valdación de lógica de negocio
+    private void validarHorarioCita(LocalTime hora) {
+        LocalTime horaInicio = LocalTime.of(9, 0);
+        LocalTime horaTermino = LocalTime.of(19, 0);
+
+        if (hora.isBefore(horaInicio) || hora.isAfter(horaTermino)) {
+            throw new ValidacionNegocioException("El horario de citas es entre 9 y 19hrs");
+        }
     }
 }
