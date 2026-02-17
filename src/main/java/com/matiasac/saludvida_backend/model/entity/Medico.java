@@ -1,8 +1,6 @@
 package com.matiasac.saludvida_backend.model.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
 
 import java.util.List;
 
@@ -19,7 +17,7 @@ public class Medico {
     @Column(nullable = false, length = 50)
     private String apellido;
 
-    @Column(nullable = false, length = 11)
+    @Column(nullable = false, unique = true, length = 11)
     private String rut;
 
     @Column(nullable = false, unique = true, length = 100)
