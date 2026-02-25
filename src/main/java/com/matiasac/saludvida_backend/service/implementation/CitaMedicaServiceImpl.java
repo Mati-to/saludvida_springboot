@@ -62,6 +62,10 @@ public class CitaMedicaServiceImpl implements ICitaMedicaService {
 
         validarHorarioCita(dto.horaCita());
 
+        //TODO: Choque de horario - Medico, Paciente y Cita
+        //TODO: Paciente 2 citas con el mismo medico, mismo día - Paciente, Medico y Cita
+        //TODO: Atención de 30min?
+
         CitaMedica citaMedica = mapper.toCitaMedica(
                 dto, medico, paciente
         );
@@ -86,7 +90,7 @@ public class CitaMedicaServiceImpl implements ICitaMedicaService {
         repository.deleteById(citaMedica.getId());
     }
 
-    // Valdación de lógica de negocio
+    // Validación de lógica de negocio
     private void validarHorarioCita(LocalTime hora) {
         LocalTime horaInicio = LocalTime.of(9, 0);
         LocalTime horaTermino = LocalTime.of(19, 0);
@@ -94,5 +98,9 @@ public class CitaMedicaServiceImpl implements ICitaMedicaService {
         if (hora.isBefore(horaInicio) || hora.isAfter(horaTermino)) {
             throw new ValidacionNegocioException("El horario de citas es entre 9 y 19hrs");
         }
+    }
+
+    private void validarChoqueHorario() {
+
     }
 }
