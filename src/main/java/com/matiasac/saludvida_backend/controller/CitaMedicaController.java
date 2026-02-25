@@ -33,7 +33,7 @@ public class CitaMedicaController {
 
     @GetMapping
     public ResponseEntity<List<LocalTime>> listHorariosDisponibles() {
-
+        return null;
     }
 
     @GetMapping("/{id}")
