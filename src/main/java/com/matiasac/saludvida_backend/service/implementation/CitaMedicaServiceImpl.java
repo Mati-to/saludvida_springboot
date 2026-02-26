@@ -13,7 +13,6 @@ import com.matiasac.saludvida_backend.repository.ICitaMedicaRepository;
 import com.matiasac.saludvida_backend.repository.IMedicoRepository;
 import com.matiasac.saludvida_backend.repository.IPacienteRepository;
 import com.matiasac.saludvida_backend.service.ICitaMedicaService;
-import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
