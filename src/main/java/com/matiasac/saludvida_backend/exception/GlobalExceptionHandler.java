@@ -10,6 +10,8 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -50,6 +52,26 @@ public class GlobalExceptionHandler {
                 errors
         );
         return ResponseEntity.badRequest().body(response);
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ApiErrorResponse> handleTipoDeDatoIncorrecto(
+            MethodArgumentTypeMismatchException exception,
+            HttpServletRequest request
+    ) {
+        String nombreParam = exception.getName();
+        String valorEnviado = exception.getValue().toString();
+        String tipoRequerido = exception.getRequiredType().getSimpleName();
+
+        String mensaje = String.format("El parámetro '%s' debe ser de tipo '%s'. Se recibió '%s'",
+                nombreParam, tipoRequerido, valorEnviado);
+
+        ApiErrorResponse response = new ApiErrorResponse(
+                HttpStatus.BAD_REQUEST.value(),
+                mensaje,
+                request.getRequestURI()
+        );
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
@@ -119,5 +141,6 @@ public class GlobalExceptionHandler {
         );
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
+
 
 }

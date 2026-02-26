@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface ICitaMedicaRepository extends JpaRepository<CitaMedica, Long> {
 
-    @Query("SELECT c.hora FROM cita_medica c WHERE c.medico.id = :medicoId AND c.fecha_cita = :fecha")
+    @Query("SELECT c.horaCita FROM CitaMedica c WHERE c.medico.id = :medicoId AND c.fechaCita = :fecha")
     List<LocalTime> findAllHorasByMedicoIdAndFechaCita(Long medicoId, LocalDate fecha);
 
     boolean existsByMedicoIdAndFechaCitaAndHoraCita(Long medicoId, LocalDate fecha, LocalTime hora);

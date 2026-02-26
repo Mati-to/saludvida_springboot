@@ -50,11 +50,18 @@ public class CitaMedicaServiceImpl implements ICitaMedicaService {
     @Override
     @Transactional(readOnly = true)
     public List<LocalTime> findHorariosDisponiblesFecha(Long medicoId, LocalDate fecha) {
+        medicoRepository.findById(medicoId)
+                .orElseThrow(() -> new NotFoundException("Médico", medicoId));
+
+        if (fecha.isBefore(LocalDate.now())) {
+            throw new ValidacionNegocioException("No se puede agendar una cita en fechas pasadas");
+        }
+
         List<LocalTime> allBloquesHorario = new ArrayList<>();
         LocalTime inicio = LocalTime.of(9,0);
-        LocalTime termino = LocalTime.of(18,0);
+        LocalTime termino = LocalTime.of(19,0);
 
-        while(!inicio.isAfter(termino)) {
+        while(!inicio.equals(termino)) {
             allBloquesHorario.add(inicio);
             inicio = inicio.plusMinutes(30);
         }
