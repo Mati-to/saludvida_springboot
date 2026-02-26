@@ -1,7 +1,6 @@
 package com.matiasac.saludvida_backend.model.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.matiasac.saludvida_backend.exception.ValidacionNegocioException;
 import jakarta.validation.constraints.*;
 
 import java.time.LocalDate;

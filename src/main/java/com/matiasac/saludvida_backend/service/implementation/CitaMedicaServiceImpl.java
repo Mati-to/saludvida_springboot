@@ -16,7 +16,9 @@ import com.matiasac.saludvida_backend.service.ICitaMedicaService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -46,6 +48,31 @@ public class CitaMedicaServiceImpl implements ICitaMedicaService {
 
     @Override
     @Transactional(readOnly = true)
+    public List<LocalTime> findHorariosDisponiblesFecha(Long medicoId, LocalDate fecha) {
+        medicoRepository.findById(medicoId)
+                .orElseThrow(() -> new NotFoundException("Médico", medicoId));
+
+        if (fecha.isBefore(LocalDate.now())) {
+            throw new ValidacionNegocioException("No se puede agendar una cita en fechas pasadas");
+        }
+
+        List<LocalTime> allBloquesHorario = new ArrayList<>();
+        LocalTime inicio = LocalTime.of(9,0);
+        LocalTime termino = LocalTime.of(19,0);
+
+        while(!inicio.equals(termino)) {
+            allBloquesHorario.add(inicio);
+            inicio = inicio.plusMinutes(30);
+        }
+
+        List<LocalTime> horasOcupadas = repository.findAllHorasByMedicoIdAndFechaCita(medicoId, fecha);
+        allBloquesHorario.removeAll(horasOcupadas);
+        return allBloquesHorario;
+    }
+
+
+    @Override
+    @Transactional(readOnly = true)
     public CitaMedicaDetalleResponseDTO findById(Long id) {
         CitaMedica citaMedica = repository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Cita médica", id));
@@ -61,14 +88,21 @@ public class CitaMedicaServiceImpl implements ICitaMedicaService {
                 .orElseThrow(() -> new NotFoundException("Paciente", dto.pacienteId()));
 
         validarHorarioCita(dto.horaCita());
+        validarChoqueHorario(medico.getId(), paciente.getId(), dto.fechaCita(), dto.horaCita());
 
-        //TODO: Choque de horario - Medico, Paciente y Cita
-        //TODO: Paciente 2 citas con el mismo medico, mismo día - Paciente, Medico y Cita
-        //TODO: Atención de 30min?
+        // Paciente 2 citas con el mismo medico, mismo día - Paciente, Medico y Cita
+        if (repository.existsByPacienteIdAndMedicoIdAndFechaCita(
+                paciente.getId(), medico.getId(), dto.fechaCita())
+        ) {
+            throw new ValidacionNegocioException("El paciente ya tiene una cita agendada con el médico para tal día");
+        }
 
-        CitaMedica citaMedica = mapper.toCitaMedica(
-                dto, medico, paciente
-        );
+        // Validación para atenciones pasadas la fecha actual
+        if (dto.fechaCita().isBefore(LocalDate.now())) {
+            throw new ValidacionNegocioException("No se puede agendar una cita en fechas pasadas");
+        }
+
+        CitaMedica citaMedica = mapper.toCitaMedica(dto, medico, paciente);
         repository.save(citaMedica);
         return mapper.toDtoDetalle(citaMedica);
     }
@@ -90,7 +124,8 @@ public class CitaMedicaServiceImpl implements ICitaMedicaService {
         repository.deleteById(citaMedica.getId());
     }
 
-    // Validación de lógica de negocio
+
+    // Validaciones de lógica de negocio
     private void validarHorarioCita(LocalTime hora) {
         LocalTime horaInicio = LocalTime.of(9, 0);
         LocalTime horaTermino = LocalTime.of(19, 0);
@@ -98,9 +133,21 @@ public class CitaMedicaServiceImpl implements ICitaMedicaService {
         if (hora.isBefore(horaInicio) || hora.isAfter(horaTermino)) {
             throw new ValidacionNegocioException("El horario de citas es entre 9 y 19hrs");
         }
+
+        if (hora.getMinute() != 0 && hora.getMinute() != 30) {
+            throw new ValidacionNegocioException("Minutos inválidos. Las citas son en bloques de 30min");
+        }
     }
 
-    private void validarChoqueHorario() {
+    private void validarChoqueHorario(
+            Long medicoId, Long pacienteId, LocalDate fecha, LocalTime hora
+    ) {
+        if (repository.existsByMedicoIdAndFechaCitaAndHoraCita(medicoId, fecha, hora)) {
+            throw new ValidacionNegocioException("Este bloque de horario ya está reservado para el médico seleccionado");
+        }
 
+        if (repository.existsByPacienteIdAndFechaCitaAndHoraCita(pacienteId, fecha, hora)) {
+            throw new ValidacionNegocioException("El paciente ya tiene una cita agendada para este bloque");
+        }
     }
 }
