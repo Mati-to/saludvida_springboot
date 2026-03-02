@@ -20,6 +20,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class CitaMedicaServiceImpl implements ICitaMedicaService {
@@ -67,6 +68,13 @@ public class CitaMedicaServiceImpl implements ICitaMedicaService {
 
         List<LocalTime> horasOcupadas = repository.findAllHorasByMedicoIdAndFechaCita(medicoId, fecha);
         allBloquesHorario.removeAll(horasOcupadas);
+
+        if(fecha.equals(LocalDate.now())) {
+            LocalTime horaLimite = LocalTime.now().plusHours(1);
+            allBloquesHorario = allBloquesHorario.stream()
+                    .filter(hora -> hora.isAfter(horaLimite))
+                    .collect(Collectors.toList());
+        }
         return allBloquesHorario;
     }
 
@@ -89,17 +97,13 @@ public class CitaMedicaServiceImpl implements ICitaMedicaService {
 
         validarHorarioCita(dto.horaCita());
         validarChoqueHorario(medico.getId(), paciente.getId(), dto.fechaCita(), dto.horaCita());
+        validarFechaHorarioPasado(dto.fechaCita(), dto.horaCita());
 
         // Paciente 2 citas con el mismo medico, mismo día - Paciente, Medico y Cita
         if (repository.existsByPacienteIdAndMedicoIdAndFechaCita(
                 paciente.getId(), medico.getId(), dto.fechaCita())
         ) {
             throw new ValidacionNegocioException("El paciente ya tiene una cita agendada con el médico para tal día");
-        }
-
-        // Validación para atenciones pasadas la fecha actual
-        if (dto.fechaCita().isBefore(LocalDate.now())) {
-            throw new ValidacionNegocioException("No se puede agendar una cita en fechas pasadas");
         }
 
         CitaMedica citaMedica = mapper.toCitaMedica(dto, medico, paciente);
@@ -148,6 +152,18 @@ public class CitaMedicaServiceImpl implements ICitaMedicaService {
 
         if (repository.existsByPacienteIdAndFechaCitaAndHoraCita(pacienteId, fecha, hora)) {
             throw new ValidacionNegocioException("El paciente ya tiene una cita agendada para este bloque");
+        }
+    }
+
+    private void validarFechaHorarioPasado(LocalDate fecha, LocalTime hora) {
+        LocalTime horaLimite = LocalTime.now().plusHours(1);
+
+        if (fecha.isBefore(LocalDate.now())) {
+            throw new ValidacionNegocioException("No se puede agendar una cita en fechas pasadas");
+        } else if (hora.isBefore(LocalTime.now())) {
+            throw new ValidacionNegocioException("No se puede agendar en un horario anterior al actual");
+        } else if (fecha.equals(LocalDate.now()) && hora.isAfter(horaLimite)) {
+            throw new ValidacionNegocioException("Debe agendar con una antelación de 1 hora");
         }
     }
 }
