@@ -162,7 +162,7 @@ public class CitaMedicaServiceImpl implements ICitaMedicaService {
             throw new ValidacionNegocioException("No se puede agendar una cita en fechas pasadas");
         } else if (hora.isBefore(LocalTime.now())) {
             throw new ValidacionNegocioException("No se puede agendar en un horario anterior al actual");
-        } else if (fecha.equals(LocalDate.now()) && hora.isAfter(horaLimite)) {
+        } else if (fecha.equals(LocalDate.now()) && !hora.isAfter(horaLimite)) {
             throw new ValidacionNegocioException("Debe agendar con una antelación de 1 hora");
         }
     }
